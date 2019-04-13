@@ -7,11 +7,9 @@ def main():
     filename = 'data/sample.png'
 
     img = cv.imread(filename)
-
     img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
 
     gray = cv.cvtColor(img, cv.COLOR_RGB2GRAY)
-
     edges = cv.Canny(gray, 50, 150, apertureSize = 3)
 
     lines = cv.HoughLines(edges, 1, np.pi/180, 200)
