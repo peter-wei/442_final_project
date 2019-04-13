@@ -75,3 +75,13 @@ def findYardlines(img):
     overlayLines(img, merged)
 
     return merged
+
+def findHashmarks(img):
+    # convert to lab colorscheme
+
+    lab = cv.cvtColor(img, cv.COLOR_RGB2LAB)
+
+    print(lab.shape)
+
+    plt.imshow(lab[:,:,0])
+    plt.show()

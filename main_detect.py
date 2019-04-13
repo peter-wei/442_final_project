@@ -11,7 +11,9 @@ def main():
     img = cv.imread(filename)
     img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
 
-    lines = LD.findYardlines(img)
+    #yardlines = LD.findYardlines(img)
+
+    hashmarks = LD.findHashmarks(img)
 
 
 
