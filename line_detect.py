@@ -72,16 +72,91 @@ def findYardlines(img):
 
     print('Found ', merged.shape[0], ' yard lines in image')
 
-    overlayLines(img, merged)
+    #overlayLines(img, merged)
 
     return merged
 
-def findHashmarks(img):
-    # convert to lab colorscheme
+def maskHash(yardLines, img):
+    img_h = img.shape[0]
 
+    yl_topx = []
+    yl_botx = []
+
+    for line in yardLines:
+        rho, theta = line
+
+        a = np.cos(theta)
+        b = np.sin(theta)
+
+        x0 = a*rho
+        y0 = b*rho
+
+        x1 = int(x0 + y0 * b / a)
+
+        x2 = int(x0 + (img_h - y0) / a * (-b))
+
+        yl_topx.append(x1)
+        yl_botx.append(x2)
+
+    yl_topx.sort()
+    yl_botx.sort()
+
+    hash_topx = []
+    hash_botx = []
+
+    for i in range(len(yl_topx) - 1):
+        top_val = np.arange(yl_topx[i], yl_topx[i+1], (yl_topx[i+1]-yl_topx[i])/5).astype(int)
+        bot_val = np.arange(yl_botx[i], yl_botx[i+1], (yl_botx[i+1]-yl_botx[i])/5).astype(int)
+        
+        for j in range(1, 5):
+            hash_topx.append(top_val[j])
+            hash_botx.append(bot_val[j])
+
+    mask = np.zeros((img.shape[0], img.shape[1]))
+
+    for i in range(len(hash_topx)):
+        cv.line(mask,(hash_topx[i],0),(hash_botx[i],img_h), 1, 10)
+
+    return mask
+
+
+def findHashmarks(img, yardLines):
+    # Generate hashmark mask based on yardLines
+    mask = maskHash(yardLines, img)
+
+    # convert to lab colorscheme
     lab = cv.cvtColor(img, cv.COLOR_RGB2LAB)
 
-    print(lab.shape)
+    luminence = lab[:, :, 0]
 
-    plt.imshow(lab[:,:,0])
+    # find edge features
+    edges = cv.Canny(luminence, 50, 150, apertureSize = 3)
+
+    edges_masked = (edges * mask).astype(np.uint8)
+
+
+    plt.imshow(edges_masked)
+    plt.show()
+
+    # list of detected lines
+    lines = cv.HoughLines(edges_masked, 20, np.pi/180, 200, min_theta=89*np.pi/180, max_theta=91*np.pi/180)
+
+    print(lines.shape)
+
+    for line in lines:
+        rho, theta = line[0]
+
+        a = np.cos(theta)
+        b = np.sin(theta)
+
+        x0 = a*rho
+        y0 = b*rho
+        x1 = int(x0 + 2000*(-b))
+        y1 = int(y0 + 2000*(a))
+        x2 = int(x0 - 2000*(-b))
+        y2 = int(y0 - 2000*(a))
+
+        cv.line(img,(x1,y1),(x2,y2),(0,0,255),2)
+
+    plt.imshow(img)
     plt.show()
