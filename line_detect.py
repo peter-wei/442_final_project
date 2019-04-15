@@ -18,7 +18,7 @@ def overlayLines(img, lines):
         x2 = int(x0 - 2000*(-b))
         y2 = int(y0 - 2000*(a))
 
-        cv.line(img,(x1,y1),(x2,y2),(0,0,255),2)
+        cv.line(img,(x1,y1),(x2,y2),(255,0,0),4)
 
     plt.imshow(img)
     plt.show()
@@ -201,7 +201,7 @@ def findHashmarks(img, yardLines, makeplot=False):
         plt.show()
 
     # list of detected lines
-    lines = cv.HoughLines(dog_masked, 20, np.pi/180, 800)
+    lines = cv.HoughLines(dog_masked, 15, np.pi/180, 800)
 
     print(lines.shape[0], 'lines found')
 
@@ -217,11 +217,6 @@ def findHashmarks(img, yardLines, makeplot=False):
         
         if match_idx == -1:
             merged.append(line[0])
-        """
-        else:
-            merged[match_idx][0] = (merged[match_idx][0] + line[0][0]) / 2
-            merged[match_idx][1] = (merged[match_idx][1] + line[0][1]) / 2
-        """
 
     merged = np.array(merged)
 
