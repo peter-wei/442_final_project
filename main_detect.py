@@ -6,14 +6,14 @@ import line_detect as LD
 
 
 def main():
-    filename = 'data/sample.png'
+    filename = 'data/sample_2.png'
 
     img = cv.imread(filename)
     img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
 
-    yardlines = LD.findYardlines(img)
+    yardlines = LD.findYardlines(img, True)
 
-    hashmarks = LD.findHashmarks(img, yardlines)
+    hashmarks = LD.findHashmarks(img, yardlines, True)
 
 
 
