@@ -117,7 +117,7 @@ def maskHash(yardLines, img):
     mask = np.zeros((img.shape[0], img.shape[1]))
 
     for i in range(len(hash_topx)):
-        cv.line(mask,(hash_topx[i],0),(hash_botx[i],img_h), 1, 10)
+        cv.line(mask,(hash_topx[i],0),(hash_botx[i],img_h), 1, 16)
 
     return mask
 
@@ -175,6 +175,10 @@ def findHashmarks(img, yardLines, makeplot=False):
     white = np.ones(img.shape[0:2]) * 255
 
     white = white * hsv_mask
+
+    if makeplot:
+        plt.imshow(white)
+        plt.show()
 
     # Create DoG (difference of gradients filter)
     dog = makeDoG(4, 8)
