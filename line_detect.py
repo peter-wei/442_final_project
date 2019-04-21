@@ -23,7 +23,7 @@ def overlayLines(img, lines):
     plt.imshow(img)
     plt.show()
 
-def checkMatch(newLine, merged, drho=30, dtheta=5):
+def checkMatch(newLine, merged, drho=60, dtheta=5):
     for i, line in enumerate(merged):
         if abs(line[0] - newLine[0]) < drho and abs(line[1] - newLine[1]) < dtheta * np.pi / 180:
             return i
@@ -38,7 +38,7 @@ def findYardlines(img, makeplot=False):
     edges = cv.Canny(gray, 50, 150, apertureSize = 3)
 
     # list of detected lines
-    lines = cv.HoughLines(edges, 1, np.pi/180, 200)
+    lines = cv.HoughLines(edges, 2, np.pi/180, 400)
 
     # Fix theta, if theta > pi, subtract 2pi
     for i, line in enumerate(lines):
@@ -168,9 +168,13 @@ def findHashmarks(img, yardLines, makeplot=False):
         plt.imshow(hue)
         plt.show()
 
+    if makeplot:
+        plt.imshow(sat)
+        plt.show()
+
     green = np.copy(img[:,:,1])
 
-    hsv_mask = (hue > 45) * (hue < 50) * (sat > 100)
+    hsv_mask = (hue > 38) * (hue < 55) * (sat > 85)
 
     white = np.ones(img.shape[0:2]) * 255
 
@@ -205,7 +209,7 @@ def findHashmarks(img, yardLines, makeplot=False):
         plt.show()
 
     # list of detected lines
-    lines = cv.HoughLines(dog_masked, 15, np.pi/180, 800)
+    lines = cv.HoughLines(dog_masked, 15, np.pi/180, 1200)
 
     print(lines.shape[0], 'lines found')
 
@@ -226,8 +230,8 @@ def findHashmarks(img, yardLines, makeplot=False):
 
     print('merged to', merged.shape[0], 'lines')
 
-    if makeplot:
-        overlayLines(img, merged)
+    #if makeplot:
+    overlayLines(img, merged)
 
     print('END finding hashmarks')
 
