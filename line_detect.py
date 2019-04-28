@@ -128,7 +128,7 @@ def findYardlines(img, makeplot=False):
     edges = cv.Canny(gray, 50, 150, apertureSize = 3)
 
     # list of detected lines
-    lines = cv.HoughLines(edges, 2, np.pi/180, 500)
+    lines = cv.HoughLines(edges, 2, np.pi/180, 400)
 
     # Fix theta, if theta > pi, subtract 2pi
     for i, line in enumerate(lines):

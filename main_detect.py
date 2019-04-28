@@ -29,6 +29,7 @@ def main():
             print("didn't find hashmarks")
             pass
 
+
         hashmarks = hashmarks[hashmarks[:,0].argsort()]
 
         intersects = LD.findIntersect(yardlines, hashmarks)
@@ -36,13 +37,6 @@ def main():
         transform = LD.findTransformMatrix(intersects)
 
         print(transform)
-
-        """
-        for pt in intersects:
-            point = np.array([[pt[0]], [pt[1]], [1]])
-            print(transform @ point)
-            print()
-        """
 
         location_file = 'player_locations/sample_'
 
@@ -89,6 +83,7 @@ def main():
         plt.scatter(transformed_points[:,0], transformed_points[:,1])
         plt.scatter(intersects_plot[:,0], intersects_plot[:,1], c='red')
         plt.show()
+        """
 
 
 if __name__ == '__main__':
