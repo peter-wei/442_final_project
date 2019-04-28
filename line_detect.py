@@ -2,22 +2,56 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.ndimage as ndi
+from numpy import linalg as LA
 
 
 def findTransformMatrix(points):
+    print(points)
+
+    m = np.zeros((8, 9))
+
+    count = 0
+
+    for i in range(len(points)):
+        if i < 2 or i > len(points) - 3:
+            x1 = points[i][0]
+            y1 = points[i][1]
+            z1 = 1
+
+            x2 = int(i/2)*5
+            y2 = -(i%2 * 19/6)
+            z2 = 1
+            first = np.array([x1, y1, z1, 0, 0, 0, x2*x1, -x2*y1, -x2*z1])
+            second = np.array([0, 0, 0, x1, y1, z1, -y2*x1, -y2*y1, -y2*z1])
+
+            m[7-count*2] = first
+            m[7-count*2 - 1] = second
+
+            count += 1
+
+    mtm = np.matmul(m.T, m)
+
+
+    w, v = LA.eig(mtm)
+
+    idx_min = np.argmin(w)
+
+    answer = v[:, idx_min]
+
+    answer = answer.reshape((3, 3))
+
+    answer /= answer[2,2]
+
+    return answer
+    """
     A = np.zeros((len(points), 3))
     B = np.zeros((len(points), 3))
 
     for i in range(len(points)):
-        A[i, 0] = points[i][0]
-        A[i, 1] = points[i][1]
-        A[i, 2] = 1
-
-        B[i, 0] = int(i/2)*5
-        B[i, 1] = i%2 * 19/6
-        B[i, 2] = 1
+        
 
     return (np.linalg.inv(A.T @ A) @ A.T @ B).T
+    """
 
 
 def findIntersect(yardLines, hashmarks):
@@ -94,7 +128,7 @@ def findYardlines(img, makeplot=False):
     edges = cv.Canny(gray, 50, 150, apertureSize = 3)
 
     # list of detected lines
-    lines = cv.HoughLines(edges, 2, np.pi/180, 400)
+    lines = cv.HoughLines(edges, 2, np.pi/180, 500)
 
     # Fix theta, if theta > pi, subtract 2pi
     for i, line in enumerate(lines):
