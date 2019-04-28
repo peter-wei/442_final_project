@@ -4,6 +4,62 @@ import matplotlib.pyplot as plt
 import scipy.ndimage as ndi
 
 
+def findTransformMatrix(points):
+    A = np.zeros((len(points), 3))
+    B = np.zeros((len(points), 3))
+
+    for i in range(len(points)):
+        A[i, 0] = points[i][0]
+        A[i, 1] = points[i][1]
+        A[i, 2] = 1
+
+        B[i, 0] = int(i/2)*5
+        B[i, 1] = i%2 * 19/6
+        B[i, 2] = 1
+
+    return (np.linalg.inv(A.T @ A) @ A.T @ B).T
+
+
+def findIntersect(yardLines, hashmarks):
+    points = []
+
+    for line in yardLines:
+        rho1, theta1 = line
+
+        a1 = np.cos(theta1)
+        b1 = np.sin(theta1)
+
+        x01 = a1*rho1
+        y01 = b1*rho1
+        x1 = int(x01 + 2000*(-b1))
+        y1 = int(y01 + 2000*(a1))
+        x2 = int(x01 - 2000*(-b1))
+        y2 = int(y01 - 2000*(a1))
+
+        for mark in hashmarks:
+            rho2, theta2 = mark
+
+            a2 = np.cos(theta2)
+            b2 = np.sin(theta2)
+
+            x02 = a2*rho2
+            y02 = b2*rho2
+            x3 = int(x02 + 2000*(-b2))
+            y3 = int(y02 + 2000*(a2))
+            x4 = int(x02 - 2000*(-b2))
+            y4 = int(y02 - 2000*(a2))
+
+            t = ((x1-x3)*(y3-y4)-(y1-y3)*(x3-x4))/((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4))
+
+            pt = []
+
+            pt.append(x1 + t*(x2-x1))
+            pt.append(y1 + t*(y2-y1))
+
+            points.append(pt)
+
+    return points
+
 def overlayLines(img, lines):
     for line in lines:
         rho, theta = line
