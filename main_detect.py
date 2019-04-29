@@ -83,7 +83,6 @@ def main():
         plt.scatter(transformed_points[:,0], transformed_points[:,1])
         plt.scatter(intersects_plot[:,0], intersects_plot[:,1], c='red')
         plt.show()
-        """
 
 
 if __name__ == '__main__':
